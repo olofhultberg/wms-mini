@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express')
 const bodyParser = require('body-parser');
-const PORT = process.env.PORT || 3000;
+const API_PORT = process.env.API_PORT || 3000;
+const API_ADDRESS= process.env.API_ADDRESS || 'localhost';
 const multipart = require('connect-multiparty');
 const multipartMiddleware = multipart();
 //Auth
@@ -27,6 +28,9 @@ var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', "*");
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'x-access-token');
+    res.header('Access-Control-Allow-Headers', 'Content-Type','x-access-token');
+    res.header('Content-Type', 'application/json');
+    res.header('Content-Type', 'multipart/form-data');
     next();
 }
 
@@ -108,7 +112,8 @@ app.post('/register', multipartMiddleware, function(req, res){
 })
 
 app.post('/login', multipartMiddleware, function(req, res) {
-    console.log("Login..", req.user)
+    console.log(req.headers)
+    console.log("Login..", req.body.email)
     new sql.ConnectionPool(config).connect().then(pool => {
         let selectSql = `SELECT * from users where email='${req.body.email}'`
         return pool.request().query(selectSql)
@@ -178,22 +183,78 @@ app.use(function(req, res, next) {
 // --- PROTECTED ROUTES ---
 // ------------------------
 
-app.get('/getDeviceByPyOrder', function(req,res){
+
+// ------- Articles --------
+
+app.get('/getArticles', function(req,res){
     //res.send("Warehouse management system (mini) - Grafokett AB v1.0");
     //res.send("GET ./py_order " + req.body.order);
+    // Fetch all articles
     console.log(req.headers)
-    console.log(`Py order = ${req.body.order}`)
-
-   
+    //console.log(`Article = ${req.body.articlenumber}`)
+  
     console.log(config)
 
     //create a pool to handle the connection
     new sql.ConnectionPool(config).connect().then(pool => {
-        return pool.request().query(`select * from register where py_order='${req.body.order}'`)
+        return pool.request().query(`select * from articles`)
     }).then(result => {
         let rows = result.recordset
         res.setHeader('Access-Control-Allow-Origin', "*")
-        res.status(200).json(rows);
+        res.status(200).json(rows); 
+        sql.close();
+    }).catch(err => {
+        res.status(500).send({message: `${err}`})
+        sql.close();
+    })
+
+
+});
+
+app.get('/getArticle', function(req,res){
+    //res.send("Warehouse management system (mini) - Grafokett AB v1.0");
+    //res.send("GET ./py_order " + req.body.order);
+    // Fetch single article
+    console.log(req.headers)
+    console.log(`Article = ${req.body.articlenumber}`)
+  
+    console.log(config)
+
+    //create a pool to handle the connection
+    new sql.ConnectionPool(config).connect().then(pool => {
+        return pool.request().query(`select * from articles WHERE artikelnr='${req.body.articlenumber}'`)
+    }).then(result => {
+        let rows = result.recordset
+        res.setHeader('Access-Control-Allow-Origin', "*")
+        res.status(200).json(rows); 
+        sql.close();
+    }).catch(err => {
+        res.status(500).send({message: `${err}`})
+        sql.close();
+    })
+
+
+});
+
+
+// ------- Log --------
+
+app.get('/getArticleBySerial', function(req,res){
+    //res.send("Warehouse management system (mini) - Grafokett AB v1.0");
+    //res.send("GET ./py_order " + req.body.order);
+    // Needs an article number and a serial number
+    console.log(req.headers)
+    console.log(`Article = ${req.body.articlenumber}`,`Serial = ${req.body.serial}`)
+  
+    console.log(config)
+
+    //create a pool to handle the connection
+    new sql.ConnectionPool(config).connect().then(pool => {
+        return pool.request().query(`select * from log where article='${req.body.articlenumber} AND serial='${req.body.serial}'`)
+    }).then(result => {
+        let rows = result.recordset
+        res.setHeader('Access-Control-Allow-Origin', "*")
+        res.status(200).json(rows); 
         sql.close();
     }).catch(err => {
         res.status(500).send({message: `${err}`})
@@ -213,15 +274,53 @@ app.get('/getDeviceByPyOrder', function(req,res){
 // --------------------------------
 
 // ------- Orders --------
-// ------- Articles --------
-// ------- Log --------
+
+
 // ------- Packlista --------
+app.post('/packlista', function(req,res){
+    // Post pack order number and articles
+    console.log(req.headers)
+    console.log(`Order = ${req.body.order}`)
+    console.log(`Articles = ${req.body.articles}`)
+    console.log(`Serials = ${req.body.serials}`)
+  
+    console.log(config)
+
+    console.log(req.body)
+
+    if (articles.length > 0){
+        console.log("Lots of articles..")
+    }
+
+    // const insertQuery = {
+    //     articles.forEach(article => {
+
+    //     })
+    // }
+
+    //create a pool to handle the connection
+    new sql.ConnectionPool(config).connect().then(pool => {
+         return pool.request().query(`INSERT INTO Packlista (artikelnr,artikelbenämning,eannr,serie) VALUES ()'`)
+     }).then(result => {
+         let rows = result.recordset
+         res.setHeader('Access-Control-Allow-Origin', "*")
+         res.status(200).json(rows); 
+         sql.close();
+     }).catch(err => {
+         res.status(500).send({message: `${err}`})
+         sql.close();
+     })
+    // res.status(200).json({
+    //     status: true,
+    //     order: req.body.order
+    // }); 
+
+});
 
 
 
 
-
-app.listen(PORT, function(){
-    console.log(`App running on localhost:${PORT}`);
+app.listen(API_PORT, function(){
+        console.log(`App running on ${API_ADDRESS}:${API_PORT}`);
 });
 

@@ -116,7 +116,11 @@ export default {
         }
         
     },
-
+    computed: {
+        api_address(){
+            return this.$store.getters.api_address
+        }
+    },
     methods: {
         setFocus(arg){
             console.log("Running setFocus..", arg)
@@ -178,13 +182,15 @@ export default {
                 txn_serials.push(element.serial)
             })
 
+            console.log(txn_articles)
+
             formData.append("order", this.order.number)
             formData.append("articles", txn_articles)
             formData.append("serials", txn_serials)
             formData.append("user_id", JSON.parse(localStorage.getItem('user')).payload['user'].id);
             this.loading="Saving order, please wait..";
            // Post to server
-            axios.post("http://localhost:3000/packlista", formData,
+            axios.post(`${this.api_address}/packlista`, formData,
             {
             headers: {"x-access-token": localStorage.getItem("token")}
             }
