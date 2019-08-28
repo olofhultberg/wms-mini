@@ -38,11 +38,11 @@
                         <div class="modal-body">
                         <div class="form-group">
                             <label for="">Article number:</label>
-                            <input type="text" id="txn_name_modal" class="form-control">
+                            <input type="text" id="txn_article_modal" class="form-control">
                         </div>
                         <div class="form-group">
                             <label for="">Serial</label>
-                            <input type="numeric" id="txn_price_modal" class="form-control">
+                            <input type="numeric" id="txn_serial_modal" class="form-control">
                         </div>
                     </div>
 
@@ -65,6 +65,7 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Article number</th>
+                            <th scope="col">Article name</th>
                             <th scope="col">Serial</th>
                             <th scope="col"></th>
                         </tr>
@@ -73,8 +74,9 @@
                         <template v-for="txn in articles">
                             <tr :key="txn.id">
                                 <th>{{ txn.id }}</th>
-                                <th>{{ txn.article }}</th>
-                                <th>{{ txn.serial }}</th>
+                                <th>{{ txn.article.number }}</th>
+                                <th>{{ txn.article.name }}</th>
+                                <th>{{ txn.article.serial }}</th>
                                 <td><button type="button" class="btn btn-danger" @click="deleteTransaction(txn.id)">X</button></td>
                             </tr>
                         </template>
@@ -106,10 +108,17 @@ export default {
     data(){
         return {
             order: {
-            number: "",
+            number: "12345  ",
             user: JSON.parse(localStorage.getItem('user')).payload['user'].name
         },
-        articles: [],
+        articles: [
+        {
+            article: {
+                number: 11111, 
+                name: 'Roasted hazelnut',
+                serial: 'RS1123444'}
+        }
+        ],
         nextTxnId: 1,
         loading:'',
         status:'',
@@ -132,8 +141,8 @@ export default {
         saveTransaction(){
             //Check if product code is scanned
             //append data to the arrays
-            let article = document.getElementById("txn_name_modal").value;
-            let serial = document.getElementById("txn_price_modal").value;
+            let article = document.getElementById("txn_article_modal").value;
+            let serial = document.getElementById("txn_serial_modal").value;
 
             if (article.length != 0 && serial > 0){
                 this.articles.push({
@@ -144,8 +153,8 @@ export default {
                 this.nextTxnId++
                 //this.calcTotal();
                 //Empty user input 
-                document.getElementById("txn_name_modal").value="";
-                document.getElementById("txn_price_modal").value ="";
+                document.getElementById("txn_article_modal").value="";
+                document.getElementById("txn_serial_modal").value ="";
             } 
         },
         deleteTransaction(){
@@ -167,6 +176,9 @@ export default {
         // },
         onSubmit(){
 
+
+            console.log(JSON.parse(localStorage.getItem('user')).payload['user'].Id)
+
             if (this.articles.length > 0) {
                 this.loading="Creating pick order, please wait..";
             }else {
@@ -187,7 +199,7 @@ export default {
             formData.append("order", this.order.number)
             formData.append("articles", txn_articles)
             formData.append("serials", txn_serials)
-            formData.append("user_id", JSON.parse(localStorage.getItem('user')).payload['user'].id);
+            formData.append("user", JSON.stringify(JSON.parse(localStorage.getItem('user')).payload['user']))
             this.loading="Saving order, please wait..";
            // Post to server
             axios.post(`${this.api_address}/packlista`, formData,

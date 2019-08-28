@@ -277,21 +277,27 @@ app.get('/getArticleBySerial', function(req,res){
 
 
 // ------- Packlista --------
-app.post('/packlista', function(req,res){
+app.post('/packlista', multipartMiddleware,  (req,res)=>{
     // Post pack order number and articles
     console.log(req.headers)
+    console.log(req.body)
     console.log(`Order = ${req.body.order}`)
-    console.log(`Articles = ${req.body.articles}`)
-    console.log(`Serials = ${req.body.serials}`)
+    console.log(`Articles = ${req.body.txn_articles}`)
+    console.log(`Serials = ${req.body.txn_serials}`)
+    console.log(`User_Id = ${req.body.user_id}`)
   
     console.log(config)
 
     console.log(req.body)
 
-    if (articles.length > 0){
-        console.log("Lots of articles..")
-    }
+    const articles = req.body.txn_articles
 
+
+    if (articles < 0){
+        
+        console.log("Nooohooo, still no articles..")
+    }
+    console.log("Lots of articles..")
     // const insertQuery = {
     //     articles.forEach(article => {
 
@@ -299,21 +305,20 @@ app.post('/packlista', function(req,res){
     // }
 
     //create a pool to handle the connection
-    new sql.ConnectionPool(config).connect().then(pool => {
-         return pool.request().query(`INSERT INTO Packlista (artikelnr,artikelbenämning,eannr,serie) VALUES ()'`)
-     }).then(result => {
-         let rows = result.recordset
-         res.setHeader('Access-Control-Allow-Origin', "*")
-         res.status(200).json(rows); 
-         sql.close();
-     }).catch(err => {
-         res.status(500).send({message: `${err}`})
-         sql.close();
-     })
-    // res.status(200).json({
-    //     status: true,
-    //     order: req.body.order
-    // }); 
+    // new sql.ConnectionPool(config).connect().then(pool => {
+    //      return pool.request().query(`INSERT INTO Packlista (artikelnr,artikelbenämning,eannr,serie) VALUES ()'`)
+    //  }).then(result => {
+    //      let rows = result.recordset
+    //      //res.setHeader('Access-Control-Allow-Origin', "*")
+    //      res.status(200).json(rows); 
+    //      sql.close();
+    //  }).catch(err => {
+    //      res.status(500).send({message: `${err}`})
+    //      sql.close();
+    //  })
+    res.status(200).json({
+        status: true
+    }); 
 
 });
 

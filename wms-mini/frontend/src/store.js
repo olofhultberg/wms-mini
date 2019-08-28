@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    api_address: '172.27.200.187',
+    api_address: '172.27.200.155',
     api_port: '3000'
   },
   getters: {
