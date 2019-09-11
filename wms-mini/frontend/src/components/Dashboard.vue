@@ -5,7 +5,7 @@
             <PickOrder/>
         </template>
          <template v-else>
-            <!-- <ViewInvoices/> -->
+            <Articles/>
         </template>
     </div>
 </template>
@@ -13,12 +13,14 @@
 <script>
 import Header from './Header'
 import PickOrder from '@/components/PickOrder'
+import Articles from '@/components/Articles'
 //import ViewInvoices from './ViewInvoices'
 
 export default {
     components:{
         Header,
         PickOrder,
+        Articles
         // ViewInvoices
     },
     name: 'Dashboard',

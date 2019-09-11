@@ -3,7 +3,7 @@
         <span style="font-size:30px; cursor:pointer" v-on:click="openNav" id="menu-icon">&#9776;</span>
         <div id="leftsidenav" class="sidenav">
             <p style="font-size:20px; color: green; cursor:pointer" @click="closeNav"><em>Close</em></p>
-            <p><em>Department: {{ department }}</em></p>
+            <p><em>Dep: {{ department }}</em></p>
             <h4>User: {{ name }}</h4>
             <p class="clickable" @click="setActive('pick')">Pick order</p>
             <p class="clickable" @click="setActive('view')">View article(s)</p>
@@ -23,7 +23,7 @@ export default {
         },
         openNav(){
           
-            document.getElementById("leftsidenav").style.width ="30%";
+            document.getElementById("leftsidenav").style.width ="25%";
         }, 
         closeNav(){
             

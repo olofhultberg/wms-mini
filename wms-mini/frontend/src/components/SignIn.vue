@@ -90,8 +90,8 @@ export default {
         return {
             model: {
             name: "",
-            email: "",
-            password: "",
+            email: "clinton@whitehouse.com",
+            password: "oldladygonebad",
             c_password: "",
             company_name: ""
             },
