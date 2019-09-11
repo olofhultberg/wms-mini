@@ -74,9 +74,9 @@
                         <template v-for="txn in articles">
                             <tr :key="txn.id">
                                 <th>{{ txn.id }}</th>
-                                <th>{{ txn.article.number }}</th>
-                                <th>{{ txn.article.name }}</th>
-                                <th>{{ txn.article.serial }}</th>
+                                <th>{{ txn.number }}</th>
+                                <th>{{ txn.name }}</th>
+                                <th>{{ txn.serial }}</th>
                                 <td><button type="button" class="btn btn-danger" @click="deleteTransaction(txn.id)">X</button></td>
                             </tr>
                         </template>
@@ -96,6 +96,7 @@
 
 <script>
 import axios from 'axios';
+import {mapActions} from 'vuex';
 
 export default {
     name: 'PickOrder',
@@ -108,18 +109,18 @@ export default {
     data(){
         return {
             order: {
-            number: "12345  ",
+            number: "12345",
             user: JSON.parse(localStorage.getItem('user')).payload['user'].name
         },
         articles: [
         {
-            article: {
+                id: 1,
                 number: 11111, 
                 name: 'Roasted hazelnut',
-                serial: 'RS1123444'}
-        }
+                serial: 'RS1123444'},
+        
         ],
-        nextTxnId: 1,
+        nextTxnId: 2,
         loading:'',
         status:'',
         }
@@ -128,9 +129,11 @@ export default {
     computed: {
         api_address(){
             return this.$store.getters.api_address
-        }
+        },
+        
     },
     methods: {
+        ...mapActions(['fetchAllArticles']),
         setFocus(arg){
             console.log("Running setFocus..", arg)
             let addButton = document.getElementById("add");
@@ -144,12 +147,24 @@ export default {
             let article = document.getElementById("txn_article_modal").value;
             let serial = document.getElementById("txn_serial_modal").value;
 
+            console.log(article, serial)
+            
+            // get the article name as a proof that article exists in sql
+            let art = Object.values(this.$store.state.articles).find(x => x.artikelnr===article)
+           // var foo = art.find(x => x.artikelnr===article)
+            console.log('art:',art.artikelbenämning)
+
+            // add article object to articles array
             if (article.length != 0 && serial > 0){
+                
                 this.articles.push({
+                    
                     id: this.nextTxnId,
-                    article,
-                    serial
+                    number: article,
+                    serial: serial,
+                    name: art.artikelbenämning
                 })
+                
                 this.nextTxnId++
                 //this.calcTotal();
                 //Empty user input 
@@ -189,16 +204,20 @@ export default {
             //format the request
             let txn_articles=[];
             let txn_serials=[];
+            let txn_names=[];
+
             this.articles.forEach(element => {
                 txn_articles.push(element.article)
                 txn_serials.push(element.serial)
+                txn_names.push(element.name)
             })
 
             console.log(txn_articles)
 
             formData.append("order", this.order.number)
-            formData.append("articles", txn_articles)
-            formData.append("serials", txn_serials)
+            formData.append("articles", JSON.stringify(this.articles))
+            // formData.append("serials", txn_serials)
+            // formData.append("")
             formData.append("user", JSON.stringify(JSON.parse(localStorage.getItem('user')).payload['user']))
             this.loading="Saving order, please wait..";
            // Post to server
@@ -215,7 +234,15 @@ export default {
                     this.status = res.data.message;
                 }
             })
-        }
+        },
+
+    },
+    created(){
+        //Fetch articles from SQL
+        console.log("We are in the created lifecycle hook")
+        this.fetchAllArticles()
+        console.log(this.$store.state.articles)
+
     }    
 
 }
