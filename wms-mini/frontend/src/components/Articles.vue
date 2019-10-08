@@ -19,7 +19,7 @@
                                 <th>{{ article.artikelbenämning }}</th>
                                 <th>{{ article.eannr }}</th>
                                 <th>{{ article.layout_etikett }}</th>
-                                <td><button type="button" class="btn btn-danger" @click="findArticle">Find</button></td>
+                                <td><button type="button" class="btn btn-danger" @click="findArticle(article)">Find</button></td>
                             </tr>
                         </template>
                     </tbody>
@@ -39,19 +39,16 @@ export default {
         articles(){
             return this.$store.state.articles;
         },
-        articleHasLayout(){
-            if (article.layout_etikett){
-                return 'yes'
-            }else {
-                return 'no'
-            }
-        },
+        
         api_address(){
             return this.$store.getters.api_address
         }
     },
     methods: {
-        ...mapActions(['fetchAllArticles'])
+        ...mapActions(['fetchAllArticles']),
+        findArticle(article){
+            console.log("Find : ", article)
+        }
     },
 
     created(){

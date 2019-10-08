@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import SignIn from '@/components/SignIn.vue'
+import Register from '@/components/Register.vue'
 import Dashboard from '@/components/Dashboard.vue'
+import NotFound from '@/components/PageNotFound'
 
 Vue.use(Router)
 
@@ -15,9 +17,19 @@ export default new Router({
       component: SignIn
     },
     {
+      path: '/register',
+      name: 'Register',
+      component: Register
+    },
+    {
       path: '/dashboard',
       name: 'Dashboard',
       component: Dashboard
+    },
+    {
+      path: '*',
+      name: 'NotFound',
+      component: NotFound
     }
     // {
     //   path: '/about',

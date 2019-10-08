@@ -22,8 +22,7 @@ export default {
             this.$parent.$parent.isactive = option;
         },
         openNav(){
-          
-            document.getElementById("leftsidenav").style.width ="25%";
+            document.getElementById("leftsidenav").style.width ="100%";
         }, 
         closeNav(){
             
@@ -51,7 +50,7 @@ export default {
   height: 100%;
   width: 0;
   position: fixed;
-  z-index: 1;
+  z-index: 3;
   top: 0;
   left: 0;
   background-color: #fafafa;

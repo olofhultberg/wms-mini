@@ -5,6 +5,7 @@
             <SideNav v-bind:name="user.name" v-bind:department="user.department" />
         </template>    
         <span class="navbar-brand mb-0 h1">{{ title }}</span>
+       <p>Beta version powered with Vue.js 🔥</p>
     </nav>
        
         </div>
@@ -20,7 +21,7 @@ export default {
     },
     data(){
         return {
-            title: "WMS Mini App",
+            title: "Grafokett WMS ver.1a",
         }
     }
 }
