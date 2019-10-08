@@ -22,3 +22,4 @@ Installation notes:
  a. Path: c:\wms\pm2_startup.bat
  b. Folder: should be c:\wms\
  c. Startup type: Automatic delayed
+ d. Make sure logon is Local System Account
